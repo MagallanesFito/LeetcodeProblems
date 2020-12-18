@@ -1,34 +1,61 @@
+
 #include<iostream>
-#include<bits/stdc++.h>
+#include<queue>
 using namespace std;
+
 struct TreeNode {
       int val;
       TreeNode *left;
       TreeNode *right;
-      TreeNode() : val(0), left(nullptr), right(nullptr) {}
-      TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
-      TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+      TreeNode(int x) : val(x), left(NULL), right(NULL) {}
   };
-void traverse(TreeNode* root,vector<string>&paths,string str){
-    if(!root->left && !root->right){
-        paths.push_back(str+to_string(root->val));
+vector<int> path;
+vector<string> paths;
+void appendToPaths(vector<int> pa){
+   string nums = "0123456789";
+   string curr="";
+   for(int i=0;i<pa.size();i++){
+      curr+=nums[pa[i]];
+      if(i<pa.size()-1){
+        curr+="->";
+      }
+   }
+   //return curr;
+   paths.push_back(curr);
+}
+void binaryTreePathsUtil(TreeNode* root){
+    //cout << " w" << endl;
+    if(!root || (!root->left && !root->right)){
+        path.push_back(root->val);
+        appendToPaths(path);
+        //cout << converted << endl;
+        //cout << " w" << endl;
         return;
     }
-    str+=to_string(root->val) + "->";
-    if(root->left) traverse(root->left,paths,str);
-    if(root->right) traverse(root->right,paths,str);
+    if(root->left){
+        path.push_back(root->val);
+        binaryTreePathsUtil(root->left);
+        path.pop_back();
+    }
+
+    if(root->right){
+        path.push_back(root->val);
+        binaryTreePathsUtil(root->right);
+        path.pop_back();
+    }
+    path.pop_back();
+    return;
 }
 vector<string> binaryTreePaths(TreeNode* root) {
-    if(!root) return {};
-    vector<string> paths;
-    string path = "";
-    traverse(root,paths,path);
-    return paths;
+        binaryTreePathsUtil(root);
+        return paths;
 }
 int main(){
-    vector<int> a = {1,2,3,1};
-    int k = 3;
-    int t = 0;
-    cout << containsNearbyAlmostDuplicate(a,k,t);
+    TreeNode* root  = new TreeNode(1);
+    root->left = new TreeNode(2);
+    root->right = new TreeNode(3);
+    root->left->right = new TreeNode(4);
+    vector<string> m = binaryTreePaths(root);
+    for(auto e:m) cout << e << endl;
     return 0;
 }
